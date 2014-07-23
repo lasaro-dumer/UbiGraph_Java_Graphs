@@ -5,6 +5,7 @@
  */
 package graph;
 
+import java.awt.Color;
 import org.ubiety.ubigraph.UbigraphClient;
 
 /**
@@ -33,6 +34,9 @@ public class Node {
 
     public Node(String name, String color) {
         this(-1, name, color);
+    }
+    public Node(String name, Color color) {
+        this(-1, name, "#"+Integer.toHexString(color.getRGB()).substring(2));
     }
 
     /**
