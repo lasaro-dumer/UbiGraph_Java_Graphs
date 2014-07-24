@@ -1,8 +1,9 @@
 package GUI;
 
-import graph.DirectedGraph;
 import graph.Node;
 import java.awt.Color;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,14 +16,12 @@ import java.awt.Color;
  */
 public class GraphGUI extends javax.swing.JFrame {
 
-    private DirectedGraph dGraph;
     private boolean editingNode;
 
     /**
      * Creates new form GraphGUI
      */
     public GraphGUI() {
-        dGraph = new DirectedGraph();
         editingNode = false;
         initComponents();
     }
@@ -36,27 +35,25 @@ public class GraphGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
         lblNodes = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        txtNodeName = new javax.swing.JTextField();
+        txtNodeLabel = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         btnNodeColor = new javax.swing.JButton();
         btnNewNode = new javax.swing.JButton();
         btnSaveNode = new javax.swing.JButton();
         btnRemoveNode = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        lstNodes = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jList1.setModel(dGraph.getNodesListModel());
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(jList1);
-
         lblNodes.setText("Nodes");
 
-        jLabel1.setText("Node Name:");
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel1.setText("Node Label:");
 
         jLabel2.setText("Color:");
 
@@ -85,6 +82,20 @@ public class GraphGUI extends javax.swing.JFrame {
 
         btnRemoveNode.setText("Remove Node");
         btnRemoveNode.setToolTipText("");
+        btnRemoveNode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveNodeActionPerformed(evt);
+            }
+        });
+
+        lstNodes.setModel(new DefaultListModel<Node>());
+        lstNodes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstNodes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstNodesMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(lstNodes);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -92,37 +103,41 @@ public class GraphGUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnNewNode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnSaveNode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnRemoveNode, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtNodeName, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnNodeColor)))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(btnSaveNode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel1)
+                                .addComponent(jLabel2))
+                            .addGap(18, 18, 18)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtNodeLabel)
+                                .addComponent(btnNodeColor, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)))
+                        .addComponent(btnNewNode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnRemoveNode, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnRemoveNode)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnNewNode)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtNodeName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNodeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(btnNodeColor))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnNewNode)
-                    .addComponent(btnSaveNode)
-                    .addComponent(btnRemoveNode))
+                .addComponent(btnSaveNode)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -131,24 +146,20 @@ public class GraphGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(lblNodes)))
+                    .addComponent(lblNodes)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblNodes)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47))
         );
 
         pack();
@@ -159,21 +170,49 @@ public class GraphGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNodeColorActionPerformed
 
     private void btnNewNodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewNodeActionPerformed
-        txtNodeName.setText("");
-        Color color = Color.WHITE;
-        btnNodeColor.setBackground(color);
-        String hex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
-        btnNodeColor.setText(hex);
-        Color your_color = Color.BLACK;
-        hex = "#"+Integer.toHexString(your_color.getRGB()).substring(2);
-        btnNodeColor.setText(hex);
-        editingNode = false;
+        newNode();
     }//GEN-LAST:event_btnNewNodeActionPerformed
 
     private void btnSaveNodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveNodeActionPerformed
-        Node n;
-        n = new Node(txtNodeName.getText(), btnNodeColor.getBackground());
+        Node n = new Node(txtNodeLabel.getText(), btnNodeColor.getBackground());
+        if (!n.getLabel().isEmpty()) {
+            DefaultListModel<Node> s = (DefaultListModel<Node>) lstNodes.getModel();
+            if (!s.contains(n)) {
+                s.addElement(n);
+            } else {
+                if (editingNode) {
+                    n.setIndex(s.get(s.indexOf(n)).getIndex());
+                    s.removeElement(n);
+                    s.addElement(n);
+                }
+            }
+            newNode();
+        }
     }//GEN-LAST:event_btnSaveNodeActionPerformed
+
+    private void lstNodesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstNodesMouseClicked
+        JList list = (JList) evt.getSource();
+        if (evt.getClickCount() == 2) {
+            int index = list.locationToIndex(evt.getPoint());
+            if (index >= 0) {
+                Node n = (Node) list.getModel().getElementAt(index);
+                txtNodeLabel.setText(n.getLabel());
+                btnNodeColor.setText(n.getColor());
+                btnNodeColor.setBackground(n.getColorObj());
+                editingNode = true;
+            }
+        } else if (evt.getClickCount() == 3) {   // Triple-click
+            int index = list.locationToIndex(evt.getPoint());
+        }
+    }//GEN-LAST:event_lstNodesMouseClicked
+
+    private void btnRemoveNodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveNodeActionPerformed
+        DefaultListModel<Node> s = (DefaultListModel<Node>) lstNodes.getModel();
+        int i = lstNodes.getSelectedIndex();
+        if (i >= 0) {
+            s.remove(i);
+        }
+    }//GEN-LAST:event_btnRemoveNodeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -210,11 +249,6 @@ public class GraphGUI extends javax.swing.JFrame {
         });
     }
 
-    public void SetGraph(DirectedGraph d) {
-        dGraph = d;
-        jList1.setModel(dGraph.getNodesListModel());
-    }
-
     public void SetColor(Color color) {
         btnNodeColor.setBackground(color);
         String hex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
@@ -228,10 +262,20 @@ public class GraphGUI extends javax.swing.JFrame {
     private javax.swing.JButton btnSaveNode;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblNodes;
-    private javax.swing.JTextField txtNodeName;
+    private javax.swing.JList lstNodes;
+    private javax.swing.JTextField txtNodeLabel;
     // End of variables declaration//GEN-END:variables
+
+    private void newNode() {
+        txtNodeLabel.setText("");
+        Color color = Color.WHITE;
+        btnNodeColor.setBackground(color);
+        String hex;
+        hex = "#" + Integer.toHexString(color.getRGB()).substring(2);
+        btnNodeColor.setText(hex);
+        editingNode = false;
+    }
 }

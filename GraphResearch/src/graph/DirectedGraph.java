@@ -8,6 +8,7 @@ package graph;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 import org.ubiety.ubigraph.UbigraphClient;
 
@@ -97,7 +98,7 @@ public class DirectedGraph {
         List<Edge> vEdges;
         //System.out.println("Node: " + v.getName());
         if (finals.contains(v)) {
-            System.out.println("Final: " + v.getName() + " Input: " + printStack(pilha));
+            System.out.println("Final: " + v.getLabel() + " Input: " + printStack(pilha));
         }
 
         if (v != null) {
@@ -146,18 +147,10 @@ public class DirectedGraph {
     }
 
     public ListModel getNodesListModel() {
-        ListModel l = new javax.swing.AbstractListModel() {
-            //String[] strings = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
-            List<Node> list = nodes;
-            public int getSize() {
-                return list.size();
-            }
-
-            public Object getElementAt(int i) {
-                return list.get(i);
-            }
-        };
-
+        DefaultListModel<Node> l = new DefaultListModel<>();
+        for (Node n : nodes) {
+            l.addElement(n);
+        }
         return l;
     }
 }

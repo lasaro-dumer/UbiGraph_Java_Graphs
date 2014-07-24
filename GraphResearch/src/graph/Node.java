@@ -15,28 +15,29 @@ import org.ubiety.ubigraph.UbigraphClient;
 public class Node {
 
     private int index;
-    private String name;
-    private String color;
+    private String label;
     private boolean mark;
     private int degree;
     private UbigraphClient drawArea;
     private NodeShape shape;
+    private Color color;
 
-    public Node(int index, String name, String color) {
+    public Node(int index, String label, String color) {
         this.index = index;
-        this.name = name;
-        this.color = color;
+        this.label = label;
         this.mark = false;
         this.degree = 0;
         this.drawArea = null;
         this.shape = NodeShape.SPHERE;
+        setColor(color);
     }
 
-    public Node(String name, String color) {
-        this(-1, name, color);
+    public Node(String label, String color) {
+        this(-1, label, color);
     }
-    public Node(String name, Color color) {
-        this(-1, name, "#"+Integer.toHexString(color.getRGB()).substring(2));
+
+    public Node(String label, Color color) {
+        this(-1, label, "#" + Integer.toHexString(color.getRGB()).substring(2));
     }
 
     /**
@@ -54,23 +55,29 @@ public class Node {
     }
 
     /**
-     * @return the name
+     * @return the label
      */
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
     /**
-     * @param name the name to set
+     * @param label the label to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**
      * @return the color
      */
     public String getColor() {
+        return "#" + Integer.toHexString(color.getRGB()).substring(2);
+    }
+    /**
+     * @return the color
+     */
+    public Color getColorObj() {
         return color;
     }
 
@@ -78,6 +85,16 @@ public class Node {
      * @param color the color to set
      */
     public void setColor(String color) {
+        int r = Integer.parseInt(color.substring(1, 3), 16);
+        int g = Integer.parseInt(color.substring(3, 5), 16);
+        int b = Integer.parseInt(color.substring(5, 7), 16);
+        this.color = new Color(r, g, b);
+    }
+
+    /**
+     * @param color the color to set
+     */
+    public void setColor(Color color) {
         this.color = color;
     }
 
@@ -104,10 +121,11 @@ public class Node {
     }
 
     private void recalcColor() {
-        //System.out.println("Nodo: " + name + " Color: " + color);
-        String R = color.substring(1, 3);
-        String G = color.substring(3, 5);
-        String B = color.substring(5, 7);
+        //System.out.println("Nodo: " + label + " Color: " + color);
+        String c = getColor();
+        String R = c.substring(1, 3);
+        String G = c.substring(3, 5);
+        String B = c.substring(5, 7);
         //System.out.println("#" + R + "." + G + "." + B);
         if (degree <= 0) {
             R = "FF";
@@ -130,7 +148,7 @@ public class Node {
             B = "90";
         }
 
-        color = "#" + R + G + B;
+        setColor("#" + R + G + B);
     }
 
     /**
@@ -151,10 +169,10 @@ public class Node {
         if (drawArea != null) {
             if (getIndex() == -1) {
                 setIndex(drawArea.newVertex());
-            }else{
+            } else {
                 drawArea.newVertex(getIndex());
             }
-            drawArea.setVertexAttribute(getIndex(), "label", getName());
+            drawArea.setVertexAttribute(getIndex(), "label", getLabel());
             drawArea.setVertexAttribute(getIndex(), "color", getColor());
             drawArea.setVertexAttribute(getIndex(), "shape", shape.toString());
         }
@@ -162,10 +180,26 @@ public class Node {
 
     @Override
     public String toString() {
-        return getName()+" "+ getColor();
+        return getLabel() + " " + getColor();
     }
 
     public void setShape(NodeShape newShape) {
         this.shape = newShape;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Node)) {
+            return false;
+        }
+        Node n = (Node) obj;
+        if (!n.getLabel().equals(this.getLabel())) {
+            return false;
+        }
+        if (n.getIndex() != this.getIndex()) {
+            return false;
+        }
+
+        return true;
     }
 }
