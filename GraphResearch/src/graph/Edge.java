@@ -5,6 +5,7 @@
  */
 package graph;
 
+import java.util.Objects;
 import org.ubiety.ubigraph.UbigraphClient;
 
 /**
@@ -15,8 +16,8 @@ public class Edge {
 
     private int index;
     private boolean mark;
-    private Node nodeA;
-    private Node nodeB;
+    private Node source;
+    private Node target;
     private String input;
     private String output;
     private UbigraphClient drawArea;
@@ -31,20 +32,20 @@ public class Edge {
         this.mark = isChecked;
     }
 
-    public Edge(boolean mark, Node nodeA, Node nodeB) {
+    public Edge(boolean mark, Node source, Node target) {
         this(mark);
-        this.nodeA = nodeA;
-        this.nodeB = nodeB;
+        this.source = source;
+        this.target = target;
     }
 
-    public Edge(Node nodeA, Node nodeB) {
+    public Edge(Node source, Node target) {
         this();
-        this.nodeA = nodeA;
-        this.nodeB = nodeB;
+        this.source = source;
+        this.target = target;
     }
 
-    public Edge(Node nodeA, Node nodeB, String aInput, String aOutput) {
-        this(nodeA, nodeB);
+    public Edge(Node source, Node target, String aInput, String aOutput) {
+        this(source, target);
         this.input = aInput;
         this.output = aOutput;
     }
@@ -64,13 +65,6 @@ public class Edge {
     }
 
     /**
-     * @param mark the mark to set
-     */
-    public void Check(boolean mark) {
-        this.mark = mark;
-    }
-
-    /**
      * @param index the index to set
      */
     public void setIndex(int index) {
@@ -78,23 +72,24 @@ public class Edge {
     }
 
     /**
-     * @return the nodeA
+     * @return the source
      */
-    public Node getNodeA() {
-        return nodeA;
+    public Node getSource() {
+        return source;
     }
 
     /**
-     * @return the nodeB
+     * @return the target
      */
-    public Node getNodeB() {
-        return nodeB;
+    public Node getTarget() {
+        return target;
     }
 
-    void Check() {
+    public void check() {
         mark = true;
     }
-    void Unheck() {
+
+    public void unheck() {
         mark = false;
     }
 
@@ -138,24 +133,56 @@ public class Edge {
      */
     public void setDrawArea(UbigraphClient drawArea) {
         this.drawArea = drawArea;
-        getNodeA().setDrawArea(drawArea);
-        getNodeB().setDrawArea(drawArea);
+        getSource().setDrawArea(drawArea);
+        getTarget().setDrawArea(drawArea);
     }
 
     public void draw() {
         if (drawArea != null) {
-            getNodeA().draw();
-            getNodeB().draw();
+            getSource().draw();
+            getTarget().draw();
             if (getIndex() == -1) {
-                setIndex(drawArea.newEdge(getNodeA().getIndex(), getNodeB().getIndex()));            
-            }else{
-                drawArea.newEdge(getIndex(),getNodeA().getIndex(), getNodeB().getIndex());
+                setIndex(drawArea.newEdge(getSource().getIndex(), getTarget().getIndex()));
+            } else {
+                drawArea.newEdge(getIndex(), getSource().getIndex(), getTarget().getIndex());
             }
+            /*
             int newEdgeStyle;
             newEdgeStyle = drawArea.newEdgeStyle(index, index);
             drawArea.setEdgeStyleAttribute(getIndex(), "label", "label edge");
             drawArea.setEdgeStyleAttribute(getIndex(), "oriented", "true");
             drawArea.setEdgeStyleAttribute(getIndex(), "arrow", "true");
+            //*/
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Edge other = (Edge) obj;
+        if (this.index != other.index) {
+            return false;
+        }
+        if (!Objects.equals(this.source, other.source)) {
+            return false;
+        }
+        if (!Objects.equals(this.target, other.target)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 79 * hash + this.index;
+        hash = 79 * hash + Objects.hashCode(this.source);
+        hash = 79 * hash + Objects.hashCode(this.target);
+        return hash;
     }
 }

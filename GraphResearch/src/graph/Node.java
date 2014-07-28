@@ -6,6 +6,7 @@
 package graph;
 
 import java.awt.Color;
+import java.util.Objects;
 import org.ubiety.ubigraph.UbigraphClient;
 
 /**
@@ -201,5 +202,13 @@ public class Node {
         }
 
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 47 * hash + this.index;
+        hash = 47 * hash + Objects.hashCode(this.label);
+        return hash;
     }
 }

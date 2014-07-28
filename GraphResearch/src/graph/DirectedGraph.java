@@ -42,11 +42,11 @@ public class DirectedGraph {
     }
 
     public void addEdge(Edge e) {
-        if (!nodes.contains(e.getNodeA())) {
-            addNode(e.getNodeA());
+        if (!nodes.contains(e.getSource())) {
+            addNode(e.getSource());
         }
-        if (!nodes.contains(e.getNodeB())) {
-            addNode(e.getNodeB());
+        if (!nodes.contains(e.getTarget())) {
+            addNode(e.getTarget());
         }
         edges.add(e);
     }
@@ -110,15 +110,15 @@ public class DirectedGraph {
 
             vEdges = allEdgesFrom(v);
             for (Edge edge : vEdges) {
-                Node w = edge.getNodeB();
+                Node w = edge.getTarget();
                 if (!(edge.isChecked() && avoidCycles)) {
-                    edge.Check();
+                    edge.check();
                     if (!w.isChecked()) {
                         pilha.push(edge.getInput());
                         DFS(G, w, miliseconds, avoidCycles);
                         pilha.pop();
                     }
-                    edge.Unheck();
+                    edge.unheck();
                 }
             }
             //System.out.println("v out : " + v.getName());
@@ -130,7 +130,7 @@ public class DirectedGraph {
     private List<Edge> allEdgesFrom(Node v) {
         List<Edge> ret = new ArrayList<>();
         for (Edge edge : edges) {
-            if (edge.getNodeA() == v) {
+            if (edge.getSource() == v) {
                 ret.add(edge);
             }
         }
