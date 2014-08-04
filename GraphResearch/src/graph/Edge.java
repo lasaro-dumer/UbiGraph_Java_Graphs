@@ -147,12 +147,12 @@ public class Edge {
                 drawArea.newEdge(getIndex(), getSource().getIndex(), getTarget().getIndex());
             }
             /*
-            int newEdgeStyle;
-            newEdgeStyle = drawArea.newEdgeStyle(index, index);
-            drawArea.setEdgeStyleAttribute(getIndex(), "label", "label edge");
-            drawArea.setEdgeStyleAttribute(getIndex(), "oriented", "true");
-            drawArea.setEdgeStyleAttribute(getIndex(), "arrow", "true");
-            //*/
+             int newEdgeStyle;
+             newEdgeStyle = drawArea.newEdgeStyle(index, index);
+             drawArea.setEdgeStyleAttribute(getIndex(), "label", "label edge");
+             drawArea.setEdgeStyleAttribute(getIndex(), "oriented", "true");
+             drawArea.setEdgeStyleAttribute(getIndex(), "arrow", "true");
+             //*/
         }
     }
 
@@ -184,5 +184,18 @@ public class Edge {
         hash = 79 * hash + Objects.hashCode(this.source);
         hash = 79 * hash + Objects.hashCode(this.target);
         return hash;
+    }
+
+    public boolean isValid() {
+        return (!(source.getLabel().isEmpty())) && (!(target.getLabel().isEmpty()));
+    }
+
+    @Override
+    public String toString() {
+        String ret = "";
+        if (this.isValid()) {
+            ret = source.getLabel() + "->" + target.getLabel();
+        }
+        return ret;
     }
 }

@@ -1,8 +1,11 @@
 package GUI;
 
+import graph.DirectedGraph;
 import graph.Edge;
 import graph.Node;
 import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
@@ -23,14 +26,17 @@ public class GraphGUI extends javax.swing.JFrame {
 
     private boolean editingNode;
     private UbigraphClient graph;
+    private boolean editingEdge;
 
     /**
      * Creates new form GraphGUI
      */
     public GraphGUI() {
         editingNode = false;
+        editingEdge = false;
         graph = null;
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -51,6 +57,7 @@ public class GraphGUI extends javax.swing.JFrame {
         cbxTarget = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        btnSaveEdge = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtNodeLabel = new javax.swing.JTextField();
@@ -63,27 +70,43 @@ public class GraphGUI extends javax.swing.JFrame {
         lstNodes = new javax.swing.JList();
         jPanel3 = new javax.swing.JPanel();
         btnConnect = new javax.swing.JButton();
+        btnDraw = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Graph Manager");
+        setResizable(false);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Edges", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP));
 
         lstEdges.setModel(new DefaultListModel<Edge>()
         );
         lstEdges.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstEdges.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstEdgesMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(lstEdges);
 
         btnRemoveEdge.setText("Remove Edge");
+        btnRemoveEdge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveEdgeActionPerformed(evt);
+            }
+        });
 
         btnNewEdge.setText("New Edge");
-
-        cbxSource.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        cbxTarget.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel3.setText("Node Source");
 
         jLabel4.setText("Node Target");
+
+        btnSaveEdge.setText("Save");
+        btnSaveEdge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveEdgeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -91,19 +114,27 @@ public class GraphGUI extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane2)
+                        .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(btnRemoveEdge, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnRemoveEdge, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
                             .addComponent(cbxSource, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnNewEdge, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)
-                            .addComponent(cbxTarget, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(btnNewEdge, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(50, 50, 50))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(cbxTarget, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSaveEdge, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
+                                .addContainerGap())))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -121,7 +152,8 @@ public class GraphGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbxSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbxTarget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbxTarget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSaveEdge))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -175,8 +207,8 @@ public class GraphGUI extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(btnSaveNode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -188,15 +220,15 @@ public class GraphGUI extends javax.swing.JFrame {
                             .addGap(18, 18, 18)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(txtNodeLabel)
-                                .addComponent(btnNodeColor, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)))
-                        .addComponent(btnNewNode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(btnNodeColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(btnNewNode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnRemoveNode, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnRemoveNode)
@@ -212,7 +244,7 @@ public class GraphGUI extends javax.swing.JFrame {
                     .addComponent(btnNodeColor))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSaveNode)
-                .addGap(24, 24, 24))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Ubigraph"));
@@ -224,6 +256,13 @@ public class GraphGUI extends javax.swing.JFrame {
             }
         });
 
+        btnDraw.setText("Draw");
+        btnDraw.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDrawActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -231,13 +270,17 @@ public class GraphGUI extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btnConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnDraw, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDraw))
                 .addContainerGap())
         );
 
@@ -256,15 +299,15 @@ public class GraphGUI extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -316,24 +359,96 @@ public class GraphGUI extends javax.swing.JFrame {
         DefaultListModel<Node> s = (DefaultListModel<Node>) lstNodes.getModel();
         int i = lstNodes.getSelectedIndex();
         if (i >= 0) {
+            DefaultListModel<Edge> edges = (DefaultListModel<Edge>) lstEdges.getModel();
+            for (int k = 0; k < edges.getSize(); k++) {
+                int j = -1;// = lstEdges.getSelectedIndex();
+                Edge e = (Edge) edges.get(k);
+                if ((e.getSource().equals(s.get(i))) || (e.getTarget().equals(s.get(i)))) {
+                    j = k;
+                }
+                if (j >= 0) {
+                    edges.remove(j);
+                }
+            }
             s.remove(i);
         }
     }//GEN-LAST:event_btnRemoveNodeActionPerformed
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
-        if (graph == null) {
-            try {
+        try {
+            if (graph == null) {
+                btnConnect.setText("Server disconnected");
                 graph = new UbigraphClient();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);              
             }
-        }
-
-        if (graph != null) {
-            btnConnect.setText("Server connected");
-            graph.clear();
+            if (graph != null) {
+                graph.clear();
+                System.out.println("clear:" + graph.clear());;
+                btnConnect.setText("Server connected");
+            }
+        } catch (Exception ex) {
+            btnConnect.setText("Server disconnected");
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnConnectActionPerformed
+
+    private void btnSaveEdgeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveEdgeActionPerformed
+        Edge e = new Edge((Node) cbxSource.getSelectedItem(), (Node) cbxTarget.getSelectedItem());
+        if (e.isValid()) {
+            DefaultListModel<Edge> s = (DefaultListModel<Edge>) lstEdges.getModel();
+            if (!s.contains(e)) {
+                s.addElement(e);
+            } else {
+                if (editingEdge) {
+                    e.setIndex(s.get(s.indexOf(e)).getIndex());
+                    s.removeElement(e);
+                    s.addElement(e);
+                }
+            }
+            newEdge();
+        }
+    }//GEN-LAST:event_btnSaveEdgeActionPerformed
+
+    private void lstEdgesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstEdgesMouseClicked
+        JList list = (JList) evt.getSource();
+        if (evt.getClickCount() == 2) {
+            int index = list.locationToIndex(evt.getPoint());
+            if (index >= 0) {
+                Edge e = (Edge) list.getModel().getElementAt(index);
+                cbxSource.setSelectedItem(e.getSource());
+                cbxTarget.setSelectedItem(e.getTarget());
+                editingEdge = true;
+            }
+        } else if (evt.getClickCount() == 3) {   // Triple-click
+            int index = list.locationToIndex(evt.getPoint());
+        }
+    }//GEN-LAST:event_lstEdgesMouseClicked
+
+    private void btnRemoveEdgeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveEdgeActionPerformed
+        DefaultListModel<Edge> s = (DefaultListModel<Edge>) lstEdges.getModel();
+        int i = lstEdges.getSelectedIndex();
+        if (i >= 0) {
+            s.remove(i);
+        }
+    }//GEN-LAST:event_btnRemoveEdgeActionPerformed
+
+    private void btnDrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDrawActionPerformed
+        try {
+            DirectedGraph dg = new DirectedGraph();
+            DefaultListModel<Edge> edges = (DefaultListModel<Edge>) lstEdges.getModel();
+            for (int i = 0; i < edges.getSize(); i++) {
+                Edge e = edges.get(i);
+                dg.addEdge(e);
+            }
+            DefaultListModel<Node> nodes = (DefaultListModel<Node>) lstNodes.getModel();
+            for (int i = 0; i < nodes.getSize(); i++) {
+                Node n = nodes.get(i);
+                dg.addNode(n);
+            }
+            dg.writeAt(graph, 0);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(GraphGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnDrawActionPerformed
 
     /**
      * @param args the command line arguments
@@ -378,11 +493,13 @@ public class GraphGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConnect;
+    private javax.swing.JButton btnDraw;
     private javax.swing.JButton btnNewEdge;
     private javax.swing.JButton btnNewNode;
     private javax.swing.JButton btnNodeColor;
     private javax.swing.JButton btnRemoveEdge;
     private javax.swing.JButton btnRemoveNode;
+    private javax.swing.JButton btnSaveEdge;
     private javax.swing.JButton btnSaveNode;
     private javax.swing.JComboBox cbxSource;
     private javax.swing.JComboBox cbxTarget;
@@ -422,5 +539,11 @@ public class GraphGUI extends javax.swing.JFrame {
         }
         cbxSource.setModel(source);
         cbxTarget.setModel(target);
+    }
+
+    private void newEdge() {
+        cbxSource.setSelectedIndex(-1);
+        cbxTarget.setSelectedIndex(-1);
+        editingEdge = false;
     }
 }
