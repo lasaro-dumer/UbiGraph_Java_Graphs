@@ -27,6 +27,7 @@ public class GraphGUI extends javax.swing.JFrame {
     private boolean editingNode;
     private UbigraphClient graph;
     private boolean editingEdge;
+    private DirectedGraph dg;
 
     /**
      * Creates new form GraphGUI
@@ -71,6 +72,7 @@ public class GraphGUI extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         btnConnect = new javax.swing.JButton();
         btnDraw = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Graph Manager");
@@ -263,6 +265,13 @@ public class GraphGUI extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -272,6 +281,8 @@ public class GraphGUI extends javax.swing.JFrame {
                 .addComponent(btnConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnDraw, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
+                .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -280,7 +291,8 @@ public class GraphGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDraw))
+                    .addComponent(btnDraw)
+                    .addComponent(jButton1))
                 .addContainerGap())
         );
 
@@ -433,22 +445,34 @@ public class GraphGUI extends javax.swing.JFrame {
 
     private void btnDrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDrawActionPerformed
         try {
-            DirectedGraph dg = new DirectedGraph();
+            dg = new DirectedGraph();
             DefaultListModel<Edge> edges = (DefaultListModel<Edge>) lstEdges.getModel();
             for (int i = 0; i < edges.getSize(); i++) {
                 Edge e = edges.get(i);
                 dg.addEdge(e);
             }
             DefaultListModel<Node> nodes = (DefaultListModel<Node>) lstNodes.getModel();
+            Node n=null;
             for (int i = 0; i < nodes.getSize(); i++) {
-                Node n = nodes.get(i);
+                n = nodes.get(i);
                 dg.addNode(n);
+            }
+            if(n!=null){
+                dg.checkFinal(n);
             }
             dg.writeAt(graph, 0);
         } catch (InterruptedException ex) {
             Logger.getLogger(GraphGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnDrawActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            dg.writeDFSAt(graph, 500, true);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(GraphGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -503,6 +527,7 @@ public class GraphGUI extends javax.swing.JFrame {
     private javax.swing.JButton btnSaveNode;
     private javax.swing.JComboBox cbxSource;
     private javax.swing.JComboBox cbxTarget;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
