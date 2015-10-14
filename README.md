@@ -1,2 +1,2 @@
-CePES_Graphs
+UbiGraph_Java_Graphs
 ============
